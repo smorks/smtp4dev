@@ -241,7 +241,14 @@ namespace Rnwood.Smtp4dev
 
         private void ViewMessage(MessageViewModel message)
         {
-            TempFileCollection tempFiles = new TempFileCollection();
+	        if (Settings.Default.UseMessageInspectorOnDoubleClick)
+	        {
+		        InspectMessage(message);
+		        return;
+	        }
+
+
+	        TempFileCollection tempFiles = new TempFileCollection();
             FileInfo msgFile = new FileInfo(tempFiles.AddExtension("eml"));
             message.SaveToFile(msgFile);
 
