@@ -1,10 +1,12 @@
 ﻿#region
 
+using System;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using anmar.SharpMimeTools;
 using Microsoft.Win32;
 using System.Collections.Specialized;
@@ -17,6 +19,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
     public class MessageViewModel : INotifyPropertyChanged
     {
         private bool _isSelected;
+	    private bool _isExpanded;
 
         public MessageViewModel(SharpMimeMessage message)
         {
@@ -33,6 +36,16 @@ namespace Rnwood.Smtp4dev.MessageInspector
                 OnPropertyChanged("IsSelected");
             }
         }
+
+	    public bool IsExpanded
+	    {
+			get { return _isExpanded; }
+		    set
+		    {
+			    _isExpanded = value;
+			    OnPropertyChanged("IsExpanded");
+		    }
+	    }
 
 
         public SharpMimeMessage Message { get; private set; }

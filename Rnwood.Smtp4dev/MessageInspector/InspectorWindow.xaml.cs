@@ -1,7 +1,11 @@
 ﻿#region
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using anmar.SharpMimeTools;
 
 #endregion
@@ -30,6 +34,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
                 SelectedPart = Message;
             }
         }
+
 
         public MessageViewModel SelectedPart
         {
@@ -76,9 +81,19 @@ namespace Rnwood.Smtp4dev.MessageInspector
 
         static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+	        var newString = e.NewValue as string;
+	        if (newString == null)
+		        return;
+
             var wb = d as WebBrowser;
             if (wb != null)
-                wb.NavigateToString(e.NewValue as string);
+                wb.NavigateToString(newString);
         }
+
+	    private void InspectorWindow_OnLoaded(object sender, RoutedEventArgs e)
+	    {
+		    Message.IsExpanded = true;
+		    HtmlView.IsSelected = true;
+	    }
     }
 }
