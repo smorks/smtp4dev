@@ -103,7 +103,9 @@ namespace Rnwood.Smtp4dev
                 //    }
                 //}
 
-                return null;
+                var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly);
+                return store.Certificates[0];
             }
 
             if (string.IsNullOrEmpty(Settings.Default.SSLCertificatePassword))

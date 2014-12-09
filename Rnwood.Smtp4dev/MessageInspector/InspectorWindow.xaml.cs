@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using anmar.SharpMimeTools;
+using MimeKit;
 
 #endregion
 
@@ -17,9 +17,12 @@ namespace Rnwood.Smtp4dev.MessageInspector
     /// </summary>
     public partial class InspectorWindow : Window
     {
-        public InspectorWindow(SharpMimeMessage message)
+        private readonly MimeMessage _msg;
+
+        public InspectorWindow(MimeMessage message)
         {
             InitializeComponent();
+            _msg = message;
             Message = new MessageViewModel(message);
         }
 
@@ -30,15 +33,12 @@ namespace Rnwood.Smtp4dev.MessageInspector
             private set
             {
                 DataContext = value;
-                treeView.DataContext = new[] {Message};
-                SelectedPart = Message;
             }
         }
 
-
-        public MessageViewModel SelectedPart
+        public PartViewModel SelectedPart
         {
-            get { return treeView.SelectedItem as MessageViewModel; }
+            get { return treeView.SelectedItem as PartViewModel; }
 
             set { value.IsSelected = true; }
         }
@@ -81,19 +81,30 @@ namespace Rnwood.Smtp4dev.MessageInspector
 
         static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-	        var newString = e.NewValue as string;
-	        if (newString == null)
-		        return;
+            var newString = e.NewValue as string;
 
             var wb = d as WebBrowser;
             if (wb != null)
-                wb.NavigateToString(newString);
+            {
+                if (newString == null)
+                {
+                    wb.Navigate(new System.Uri("about:blank"));
+                }
+                else
+                {
+                    wb.NavigateToString(newString);
+                }
+            }
         }
 
-	    private void InspectorWindow_OnLoaded(object sender, RoutedEventArgs e)
-	    {
-		    Message.IsExpanded = true;
-		    HtmlView.IsSelected = true;
-	    }
+        private void InspectorWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (SelectedPart != null)
+            {
+                SelectedPart.IsExpanded = true;
+            }
+
+            HtmlView.IsSelected = true;
+        }
     }
 }

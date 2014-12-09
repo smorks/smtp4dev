@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using Rnwood.SmtpServer;
-using anmar.SharpMimeTools;
+using MimeKit;
 
 #endregion
 
@@ -35,17 +35,17 @@ namespace Rnwood.Smtp4dev
 
         public string Subject
         {
-            get { return SharpMimeTools.rfc2047decode(Parts.Header.Subject); }
+            get { return Parts.Subject; }
         }
 
-        private SharpMimeMessage _contents;
-        public SharpMimeMessage Parts
+        private MimeMessage _contents;
+        public MimeMessage Parts
         {
             get
             {
                 if (_contents == null)
                 {
-                    _contents = new SharpMimeMessage(Message.GetData());
+                    _contents = MimeMessage.Load(Message.GetData());
                 }
 
                 return _contents;
