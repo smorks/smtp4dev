@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -17,9 +18,13 @@ namespace Rnwood.Smtp4dev.MessageInspector
         private bool _isSelected;
         private bool _isExpanded;
 
+        private List<PartViewModel> _parts;
+
         public PartViewModel(MimeEntity part)
         {
             _part = part;
+            var mp = _part as Multipart;
+            if (mp != null) { IsExpanded = true; }
         }
 
         public bool IsSelected
@@ -43,15 +48,37 @@ namespace Rnwood.Smtp4dev.MessageInspector
             }
         }
 
+        public bool IsHtml
+        {
+            get
+            {
+                var tp = _part as TextPart;
+                if (tp != null)
+                {
+                    return tp.IsHtml;
+                }
+                return false;
+            }
+        }
+
         public PartViewModel[] Children
         {
             get
             {
-                var mp = _part as Multipart;
-                if (mp != null)
+                if (_parts == null)
                 {
-                    return mp.Select(p => new PartViewModel(p)).ToArray();
+                    var mp = _part as Multipart;
+                    if (mp != null)
+                    {
+                        _parts = new List<PartViewModel>(mp.Select(p => new PartViewModel(p)));
+                        return _parts.ToArray();
+                    }
                 }
+                else
+                {
+                    return _parts.ToArray();
+                }
+                
                 return null;
             }
         }

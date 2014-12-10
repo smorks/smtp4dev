@@ -99,10 +99,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
 
         private void InspectorWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (SelectedPart != null)
-            {
-                SelectedPart.IsExpanded = true;
-            }
+            if (Message != null) { Message.SelectHtmlPart(); }
 
             HtmlView.IsSelected = true;
         }

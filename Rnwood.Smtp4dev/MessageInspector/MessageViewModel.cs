@@ -13,7 +13,6 @@ namespace Rnwood.Smtp4dev.MessageInspector
             _msg = message;
             var pvm = new PartViewModel(message.Body);
             pvm.IsExpanded = true;
-            pvm.IsSelected = true;
             _main = new[] {pvm};
         }
 
@@ -30,6 +29,29 @@ namespace Rnwood.Smtp4dev.MessageInspector
         public string Subject
         {
             get { return _msg.Subject; }
+        }
+
+        public void SelectHtmlPart()
+        {
+            if (_main.Length > 0)
+            {
+                FindHtmlPart(_main[0].Children);
+            }
+        }
+
+        private void FindHtmlPart(PartViewModel[] items)
+        {
+            if (items == null || items.Length == 0) return;
+            
+            foreach (var pvm in items)
+            {
+                if (pvm.IsHtml)
+                {
+                    pvm.IsSelected = true;
+                    return;
+                }
+                FindHtmlPart(pvm.Children);
+            }
         }
 
         #region INotifyPropertyChanged Members
