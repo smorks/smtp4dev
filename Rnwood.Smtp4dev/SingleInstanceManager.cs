@@ -44,7 +44,7 @@ namespace Rnwood.Smtp4dev
             }
 
             IpcClientChannel channel = new IpcClientChannel(ApplicationId, null);
-            ChannelServices.RegisterChannel(channel);
+            ChannelServices.RegisterChannel(channel, true);
 
             IFirstInstanceServer server =
                 (IFirstInstanceServer)
@@ -67,7 +67,7 @@ namespace Rnwood.Smtp4dev
             }
 
             IpcServerChannel channel = new IpcServerChannel(ApplicationId);
-            ChannelServices.RegisterChannel(channel);
+            ChannelServices.RegisterChannel(channel, true);
 
             RemotingServices.Marshal(this, ApplicationId, typeof (IFirstInstanceServer));
         }

@@ -257,10 +257,8 @@ namespace Rnwood.Smtp4dev
                     case DialogResult.Yes:
                         Process.Start("http://download.live.com/wlmail");
                         return;
-                        break;
                     case DialogResult.Cancel:
                         return;
-                        break;
                 }
             }
 
