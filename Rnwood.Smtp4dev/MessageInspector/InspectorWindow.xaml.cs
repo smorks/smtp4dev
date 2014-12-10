@@ -55,12 +55,12 @@ namespace Rnwood.Smtp4dev.MessageInspector
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Open_Click(object sender, RoutedEventArgs e)
         {
             SelectedPart.View();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void SaveAs_Click(object sender, RoutedEventArgs e)
         {
             SelectedPart.Save();
         }

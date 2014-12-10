@@ -70,8 +70,8 @@
                         <TabItem Header="Body">
                             <DockPanel>
                                 <StackPanel Margin="3" DockPanel.Dock="Bottom" HorizontalAlignment="Left" Orientation="Horizontal">
-                                    <Button Margin="3" Padding="3"  Click="Button_Click">Open</Button>
-                                    <Button Margin="3" Padding="3"  Click="Button_Click_1">Save As...</Button>
+                                    <Button Margin="3" Padding="3"  Click="Open_Click">Open</Button>
+                                    <Button Margin="3" Padding="3"  Click="SaveAs_Click">Save As...</Button>
                                 </StackPanel>
                                 <TextBox IsReadOnly="True" Margin="3" FontFamily="Courier New" Text="{Binding Path=Body, Mode=OneWay}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
                             </DockPanel>
