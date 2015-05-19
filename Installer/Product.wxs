@@ -111,6 +111,7 @@
             <File Id="F07" Name="WPFToolkit.dll" Source="$(var.Rnwood.Smtp4dev.TargetPath)\..\WPFToolkit.dll"/>
             <File Id="F08" Name="$(var.Rnwood.AutoUpdate.TargetFileName)" Source="$(var.Rnwood.AutoUpdate.TargetPath)"/>
             <File Id="F09" Name="MimeKit.dll" Source="$(var.Rnwood.Smtp4dev.TargetDir)MimeKit.dll"/>
+            <File Id="F10" Name="BouncyCastle.dll" Source="$(var.Rnwood.Smtp4dev.TargetDir)BouncyCastle.dll"/>
             <Shortcut Id="S01" Directory="StartMenuDir" Name="smtp4dev" Target="ProductFeature" Show="normal" Icon="Icon.exe" WorkingDirectory="TARGETDIR"/>
             <RemoveFolder Id="R01" Directory="StartMenuDir" On='uninstall' />
             <RemoveFolder Id="R02" Directory="INSTALLLOCATION" On='uninstall' />
@@ -119,6 +120,7 @@
             <RemoveFile Id='R07' Directory='INSTALLLOCATION' Name='WPFToolkit.dll' On='uninstall'/>
             <RemoveFile Id='R08' Directory='INSTALLLOCATION' Name='$(var.Rnwood.AutoUpdate.TargetFileName)' On='uninstall'/>
             <RemoveFile Id='R09' Directory='INSTALLLOCATION' Name='MimeKit.dll' On='uninstall'/>
+            <RemoveFile Id='R10' Directory='INSTALLLOCATION' Name='BouncyCastle.dll' On='uninstall'/>
           </Component>
 
           <Component Id='C02' Guid='9F86CD72-6AD5-445c-8C6E-A357E38C29BC'>
