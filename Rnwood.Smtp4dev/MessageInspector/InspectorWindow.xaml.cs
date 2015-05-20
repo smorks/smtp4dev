@@ -99,7 +99,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
 
         private void InspectorWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (Message != null) { Message.SelectHtmlPart(); }
+            if (Message != null) { Message.SmartSelect(); }
 
             HtmlView.IsSelected = true;
         }

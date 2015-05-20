@@ -31,11 +31,18 @@ namespace Rnwood.Smtp4dev.MessageInspector
             get { return _msg.Subject; }
         }
 
-        public void SelectHtmlPart()
+        public void SmartSelect()
         {
             if (_main.Length > 0)
             {
-                FindHtmlPart(_main[0].Children);
+                if (_main.Length == 1 && _main[0].Children == null)
+                {
+                    _main[0].IsSelected = true;
+                }
+                else
+                {
+                    FindHtmlPart(_main[0].Children);
+                }
             }
         }
 
