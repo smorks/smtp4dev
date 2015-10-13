@@ -4,7 +4,7 @@
     {
         public void Process(IConnection connection, SmtpCommand command)
         {
-            connection.WriteResponse(new SmtpResponse(StandardSmtpResponseCode.OK, "Sucessfully did nothing"));
+            connection.WriteResponse(new SmtpResponse(StandardSmtpResponseCode.OK, "Successfully did nothing"));
         }
     }
 }

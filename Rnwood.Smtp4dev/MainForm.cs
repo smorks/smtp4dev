@@ -199,7 +199,7 @@ namespace Rnwood.Smtp4dev
                                                         message.To,
                                                         message.Subject);
 
-                                                trayIcon.ShowBalloonTip(3000, "Message Recieved", body, ToolTipIcon.Info);
+                                                trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
                                             }
 
                                             if (Visible && Settings.Default.BringToFrontOnNewMessage)

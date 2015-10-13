@@ -298,7 +298,7 @@
 			this.checkBox14.Name = "checkBox14";
 			this.checkBox14.Size = new System.Drawing.Size(425, 17);
 			this.checkBox14.TabIndex = 13;
-			this.checkBox14.Text = "Inspect instead of viewing when ballon notification is clicked";
+			this.checkBox14.Text = "Inspect instead of viewing when balloon notification is clicked";
 			this.checkBox14.UseVisualStyleBackColor = true;
 			// 
 			// label10

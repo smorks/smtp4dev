@@ -39,7 +39,7 @@
             this.optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.messageGrid = new System.Windows.Forms.DataGridView();
-            this.Recieved = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Received = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.subjectDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ToAddressesNice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.messageBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -170,7 +170,7 @@
             this.messageGrid.BackgroundColor = System.Drawing.SystemColors.Window;
             this.messageGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.messageGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Recieved,
+            this.Received,
             this.subjectDataGridViewTextBoxColumn,
             this.ToAddressesNice});
             this.messageGrid.DataSource = this.messageBindingSource;
@@ -188,14 +188,14 @@
             this.messageGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.messageGrid_CellFormatting);
             this.messageGrid.SelectionChanged += new System.EventHandler(this.messageGrid_SelectionChanged);
             // 
-            // Recieved
+            // Received
             // 
-            this.Recieved.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Recieved.DataPropertyName = "ReceivedDate";
-            this.Recieved.HeaderText = "Received";
-            this.Recieved.Name = "Recieved";
-            this.Recieved.ReadOnly = true;
-            this.Recieved.Width = 77;
+            this.Received.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Received.DataPropertyName = "ReceivedDate";
+            this.Received.HeaderText = "Received";
+            this.Received.Name = "Received";
+            this.Received.ReadOnly = true;
+            this.Received.Width = 77;
             // 
             // subjectDataGridViewTextBoxColumn
             // 
@@ -671,7 +671,7 @@
         private System.Windows.Forms.BindingSource sessionBindingSource;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.Button viewSessionButton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Recieved;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Received;
         private System.Windows.Forms.DataGridViewTextBoxColumn subjectDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn ToAddressesNice;
         private System.Windows.Forms.Button deleteSessionButton;
