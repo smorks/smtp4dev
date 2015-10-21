@@ -102,7 +102,7 @@ namespace Rnwood.SmtpServer
         IMessage CreateMessage(IConnection connection);
 
         /// <summary>
-        /// Determines whether the speficied auth mechanism should be enabled for the specified connecton.
+        /// Determines whether the specified auth mechanism should be enabled for the specified connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="authMechanism">The auth mechanism.</param>

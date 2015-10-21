@@ -198,7 +198,7 @@ namespace Rnwood.SmtpServer
                         else
                         {
                             WriteResponse(new SmtpResponse(StandardSmtpResponseCode.SyntaxErrorCommandUnrecognised,
-                                                           "Command unrecognised"));
+                                                           "Command unrecognized"));
                         }
                     }
                     else if (command.IsEmpty)
@@ -207,7 +207,7 @@ namespace Rnwood.SmtpServer
                     else
                     {
                         WriteResponse(new SmtpResponse(StandardSmtpResponseCode.SyntaxErrorCommandUnrecognised,
-                                                       "Command unrecognised"));
+                                                       "Command unrecognized"));
                     }
                 }
             }

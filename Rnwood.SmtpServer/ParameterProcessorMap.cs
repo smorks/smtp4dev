@@ -48,7 +48,7 @@ namespace Rnwood.SmtpServer
                 {
                     throw new SmtpServerException(
                         new SmtpResponse(StandardSmtpResponseCode.SyntaxErrorInCommandArguments,
-                                         "Parameter {0} is not recognised", parameter.Name));
+                                         "Parameter {0} is not recognized", parameter.Name));
                 }
             }
         }

@@ -46,7 +46,7 @@ namespace Rnwood.SmtpServer
         string Log { get; }
 
         /// <summary>
-        /// Gets the list of messages recevied in this session.
+        /// Gets the list of messages received in this session.
         /// </summary>
         /// <value>The messages.</value>
         List<Message> Messages { get; }
@@ -116,7 +116,7 @@ namespace Rnwood.SmtpServer
         string Log { get; }
 
         /// <summary>
-        /// Gets the list of messages recevied in this session.
+        /// Gets the list of messages received in this session.
         /// </summary>
         /// <value>The messages.</value>
         List<Message> Messages { get; }

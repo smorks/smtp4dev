@@ -11,7 +11,7 @@ namespace Rnwood.SmtpServer
         public void Process(IConnection connection, SmtpCommand command)
         {
             connection.WriteResponse(new SmtpResponse(StandardSmtpResponseCode.ClosingTransmissionChannel,
-                                                               "See you later aligator"));
+                                                               "See you later alligator"));
             connection.CloseConnection();
             connection.Session.CompletedNormally = true;
         }
