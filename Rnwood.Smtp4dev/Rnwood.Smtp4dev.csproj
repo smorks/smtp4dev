@@ -152,8 +152,7 @@
     <None Include="Properties\DataSources\Rnwood.SmtpServer.Session.datasource" />
     <None Include="Properties\DataSources\SMTPSession.datasource" />
     <None Include="Resources\Icon2.ico" />
-    <None Include="Resources\localhost.cer" />
-    <None Include="Resources\root.cer" />
+    <None Include="Resources\localhost.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rnwood.AutoUpdate\Rnwood.AutoUpdate.csproj">
