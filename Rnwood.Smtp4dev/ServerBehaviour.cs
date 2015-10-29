@@ -8,6 +8,7 @@ using Rnwood.Smtp4dev.Properties;
 using Rnwood.SmtpServer;
 using Rnwood.SmtpServer.Extensions;
 using Rnwood.SmtpServer.Extensions.Auth;
+using Message = Rnwood.SmtpServer.Message;
 
 #endregion
 
@@ -103,9 +104,19 @@ namespace Rnwood.Smtp4dev
                 //    }
                 //}
 
+                var localCert = System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location, "localhost.pfx");
+
+                if (System.IO.File.Exists(localCert))
+                {
+                    return new X509Certificate(localCert);
+                }
+                
                 var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
-                if (store.Certificates.Count > 0) { return store.Certificates[0]; }
+                if (store.Certificates.Count > 0)
+                {
+                    return store.Certificates[0];
+                }
                 return null;
             }
 
