@@ -111,7 +111,7 @@
             <File Id="F07" Name="WPFToolkit.dll" Source="$(var.Rnwood.Smtp4dev.TargetPath)\..\WPFToolkit.dll"/>
             <File Id="F08" Name="$(var.Rnwood.AutoUpdate.TargetFileName)" Source="$(var.Rnwood.AutoUpdate.TargetPath)"/>
             <File Id="F09" Name="MimeKit.dll" Source="$(var.Rnwood.Smtp4dev.TargetDir)MimeKit.dll"/>
-            <File Id="F10" Name="BouncyCastle.dll" Source="$(var.Rnwood.Smtp4dev.TargetDir)BouncyCastle.dll"/>
+            <File Id="F10" Name="BouncyCastle.Crypto.dll" Source="$(var.Rnwood.Smtp4dev.TargetDir)BouncyCastle.Crypto.dll"/>
             <Shortcut Id="S01" Directory="StartMenuDir" Name="smtp4dev" Target="ProductFeature" Show="normal" Icon="Icon.exe" WorkingDirectory="TARGETDIR"/>
             <RemoveFolder Id="R01" Directory="StartMenuDir" On='uninstall' />
             <RemoveFolder Id="R02" Directory="INSTALLLOCATION" On='uninstall' />
