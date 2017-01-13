@@ -104,7 +104,7 @@ namespace Rnwood.Smtp4dev
                 //    }
                 //}
 
-                var localCert = System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location, "localhost.pfx");
+                var localCert = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "localhost.pfx");
 
                 if (System.IO.File.Exists(localCert))
                 {
