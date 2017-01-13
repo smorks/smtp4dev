@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Rnwood.AutoUpdate;
 using Rnwood.Smtp4dev.Properties;
@@ -42,20 +43,20 @@ namespace Rnwood.Smtp4dev
                 if ((!Settings.Default.LastUpdateCheck.HasValue) || Settings.Default.LastUpdateCheck.Value.AddDays(Properties.Settings.Default.UpdateCheckInterval) < DateTime.Now)
                 {
                     Settings.Default.LastUpdateCheck = DateTime.Now;
-                    
-                    try
-                    {
-                        CheckForUpdateCore();
-                    }
-                    catch (Exception e)
-                    {
-                        if (MessageBox.Show(string.Format("Failed to check for update ({0})\nPlease check Internet connection and proxy settings.\nWould you like smtp4dev to try again next time it is launched?", e.Message), "smtp4dev", MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            Settings.Default.EnableUpdateCheck = false;
-                        }
-                    }
-
                     Settings.Default.Save();
+
+                    Task.Factory.StartNew(CheckForUpdateCore)
+                        .ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                            {
+                                if (MessageBox.Show($"Failed to check for update ({t.Exception.InnerException.Message})\nPlease check Internet connection and proxy settings.\nWould you like smtp4dev to try again next time it is launched?", "smtp4dev", MessageBoxButtons.YesNo) == DialogResult.No)
+                                {
+                                    Settings.Default.EnableUpdateCheck = false;
+                                    Settings.Default.Save();
+                                }
+                            }
+                        });
                 }
             }
         }
