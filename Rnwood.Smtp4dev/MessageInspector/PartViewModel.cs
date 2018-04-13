@@ -181,15 +181,33 @@ namespace Rnwood.Smtp4dev.MessageInspector
                     extn = MIMEDatabase.GetExtension(MimeType) ?? ".part";
                 }
 
-                var tempFiles = new TempFileCollection();
-                var msgFile = new FileInfo(tempFiles.AddExtension(extn.TrimStart('.')));
+                var tempFile = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + extn);
+
+                var msgFile = new FileInfo(tempFile);
 
                 using (FileStream stream = msgFile.OpenWrite())
                 {
                     mp.ContentObject.DecodeTo(stream);
                 }
 
-                Process.Start(msgFile.FullName);
+                var p = new Process()
+                {
+                    StartInfo = { FileName = msgFile.FullName },
+                    EnableRaisingEvents = true
+                };
+
+                p.Exited += (sender, e) =>
+                {
+                    try
+                    {
+                        File.Delete(msgFile.FullName);
+                    }
+                    catch
+                    {
+                    }
+                };
+
+                p.Start();
             }
         }
     }
