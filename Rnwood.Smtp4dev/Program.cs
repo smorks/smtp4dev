@@ -1,14 +1,9 @@
-﻿#region
-
-using System;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Rnwood.AutoUpdate;
 using Rnwood.Smtp4dev.Properties;
 
-#endregion
 
 namespace Rnwood.Smtp4dev
 {
@@ -32,8 +27,8 @@ namespace Rnwood.Smtp4dev
 
             CheckForUpdate();
 
-            MainForm form = new MainForm();
-            Application.Run(form);
+            var ctx = new AppContext();
+            Application.Run(ctx);
         }
 
         private static void CheckForUpdate()

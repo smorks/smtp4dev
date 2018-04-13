@@ -5,56 +5,53 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
-using MimeKit;
 using Microsoft.Win32;
 using Rnwood.Smtp4dev.MessageInspector;
 using Rnwood.Smtp4dev.Properties;
 using Rnwood.SmtpServer;
-using Message = Rnwood.SmtpServer.Message;
 
 namespace Rnwood.Smtp4dev
 {
     public partial class MainForm : Form
     {
-        private readonly BindingList<MessageViewModel> _messages = new BindingList<MessageViewModel>();
-        private readonly BindingList<SessionViewModel> _sessions = new BindingList<SessionViewModel>();
-        private Server _server;
-        private bool _quitting;
+        private BindingList<MessageViewModel> _messages;
+        private BindingList<SessionViewModel> _sessions;
 
         public MainForm()
         {
             InitializeComponent();
 
-            messageBindingSource.DataSource = _messages;
-            sessionBindingSource.DataSource = _sessions;
-            _messages.ListChanged += _messages_ListChanged;
-
             Icon = Resources.ListeningIcon;
-            trayIcon.Icon = Resources.NotListeningIcon;
         }
 
-        private bool _firstShown = true;
-
-        protected override void OnShown(EventArgs e)
+        public BindingList<MessageViewModel> Messages
         {
-            base.OnShown(e);
-
-            if (_firstShown)
+            get
             {
-
-                Visible = true;
-                Visible = !Settings.Default.StartInTray;
-
-                if (Settings.Default.ListenOnStartup)
-                {
-                    StartServer();
-                }
+                return _messages;
             }
-
-            _firstShown = false;
+            set
+            {
+                _messages = value;
+                messageBindingSource.DataSource = _messages;
+            }
         }
+
+        public BindingList<SessionViewModel> Sessions
+        {
+            get
+            {
+                return _sessions;
+            }
+            set
+            {
+                _sessions = value;
+                sessionBindingSource.DataSource = _sessions;
+            }
+        }
+
+        internal ServerController ServerController;
 
         public MessageViewModel SelectedMessage
         {
@@ -104,9 +101,9 @@ namespace Rnwood.Smtp4dev
 
         private void StartServer()
         {
-            new Thread(ServerWork).Start();
+            //new Thread(ServerWork).Start();
 
-            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, _messages.Count);
+            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, Messages.Count);
             trayIcon.Icon = Resources.ListeningIcon;
             listenForConnectionsToolStripMenuItem.Checked = true;
             statusLabel.Text = string.Format("Listening on port {0}", Settings.Default.PortNumber);
@@ -128,6 +125,7 @@ namespace Rnwood.Smtp4dev
             }
         }
 
+        /*
         private void ServerWork()
         {
             try
@@ -155,6 +153,7 @@ namespace Rnwood.Smtp4dev
                                             }));
             }
         }
+        */
 
         private void OnSessionCompleted(object sender, SessionEventArgs e)
         {
@@ -213,9 +212,8 @@ namespace Rnwood.Smtp4dev
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Quit();
+            // Quit();
         }
-
 
         private void trayIcon_DoubleClick(object sender, EventArgs e)
         {
@@ -300,27 +298,10 @@ namespace Rnwood.Smtp4dev
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Quit();
-        }
-
-        private void Quit()
-        {
-            if (_server.IsRunning)
-            {
-                StopServer();
-            }
-            trayIcon.Visible = false;
-            _quitting = true;
-            Application.Exit();
         }
 
         private void StopServer()
         {
-            if (_server.IsRunning)
-            {
-                _server.Stop();
-            }
-
             trayIcon.Icon = Resources.NotListeningIcon;
             listenForConnectionsToolStripMenuItem.Checked = false;
             statusLabel.Text = "Not listening";
@@ -343,11 +324,7 @@ namespace Rnwood.Smtp4dev
         {
             if (new OptionsForm().ShowDialog() == DialogResult.OK)
             {
-                if (_server.IsRunning)
-                {
-                    StopServer();
-                    StartServer();
-                }
+                ServerController.Restart();
             }
         }
 
@@ -497,18 +474,6 @@ namespace Rnwood.Smtp4dev
                 foreach (MessageViewModel message in _messages.Where(mvm => session.Session.Messages.Any(m => mvm.Message == m)).ToArray())
                 {
                     _messages.Remove(message);
-                }
-            }
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (!_quitting)
-            {
-                if (Settings.Default.MinimizeToSysTray)
-                {
-                    WindowState = FormWindowState.Minimized;
-                    e.Cancel = true;
                 }
             }
         }

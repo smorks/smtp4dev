@@ -90,6 +90,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="AppContext.cs" />
     <Compile Include="MessageInspector\HeaderViewModel.cs" />
     <Compile Include="MessageInspector\PartViewModel.cs" />
     <Compile Include="ServerBehaviour.cs" />
@@ -144,6 +145,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RegistrySettings.cs" />
+    <Compile Include="ServerController.cs" />
     <Compile Include="SessionViewModel.cs" />
     <Compile Include="SingleInstanceManager.cs" />
   </ItemGroup>

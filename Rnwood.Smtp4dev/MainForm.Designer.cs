@@ -606,7 +606,6 @@
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.MainForm_VisibleChanged);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.trayIconContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messageGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messageBindingSource)).EndInit();
