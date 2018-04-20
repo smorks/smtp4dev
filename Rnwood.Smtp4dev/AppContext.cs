@@ -9,10 +9,14 @@ namespace Rnwood.Smtp4dev
 
         private readonly BindingList<MessageViewModel> _messages = new BindingList<MessageViewModel>();
         private readonly BindingList<SessionViewModel> _sessions = new BindingList<SessionViewModel>();
+        private ServerController _server;
+        private MainForm _form;
 
         public AppContext()
         {
             CreateTrayIcon();
+            InitServer();
+            InitMainForm();
         }
 
         private void CreateTrayIcon()
@@ -40,6 +44,18 @@ namespace Rnwood.Smtp4dev
 
             _trayIcon.Visible = true;
         }
+
+        private void InitServer()
+        {
+            _server = new ServerController();
+
+        }
+
+        private void InitMainForm()
+        {
+            _form = new MainForm(_server, _messages, _sessions);
+        }
+
 
         private void _trayIcon_DoubleClick(object sender, System.EventArgs e)
         {

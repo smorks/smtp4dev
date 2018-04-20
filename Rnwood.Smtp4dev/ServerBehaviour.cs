@@ -19,7 +19,7 @@ namespace Rnwood.Smtp4dev
         private readonly AuthExtension _authExtension = new AuthExtension();
         private readonly EightBitMimeExtension _eightBitMimeExtension = new EightBitMimeExtension();
         private readonly SizeExtension _sizeExtension = new SizeExtension();
-        private readonly StartTlsExtension _startTLSExtension = new StartTlsExtension();
+        private readonly StartTlsExtension _startTlsExtension = new StartTlsExtension();
 
         #region IServerBehaviour Members
 
@@ -30,10 +30,7 @@ namespace Rnwood.Smtp4dev
 
         public void OnMessageReceived(IConnection connection, Message message)
         {
-            if (MessageReceived != null)
-            {
-                MessageReceived(this, new MessageEventArgs(message));
-            }
+            MessageReceived?.Invoke(this, new MessageEventArgs(message));
         }
 
         public void OnMessageRecipientAdding(IConnection connection, Message message, string recipient)
@@ -49,20 +46,11 @@ namespace Rnwood.Smtp4dev
         {
         }
 
-        public string DomainName
-        {
-            get { return Settings.Default.DomainName; }
-        }
+        public string DomainName => Settings.Default.DomainName;
 
-        public IPAddress IpAddress
-        {
-            get { return IPAddress.Parse(Settings.Default.IPAddress); }
-        }
+        public IPAddress IpAddress => IPAddress.Parse(Settings.Default.IPAddress);
 
-        public int PortNumber
-        {
-            get { return Settings.Default.PortNumber; }
-        }
+        public int PortNumber => Settings.Default.PortNumber;
 
         public bool IsSSLEnabled(IConnection connection)
         {
@@ -104,7 +92,11 @@ namespace Rnwood.Smtp4dev
                 //    }
                 //}
 
-                var localCert = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "localhost.pfx");
+                var exePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+                if (string.IsNullOrEmpty(exePath)) return null;
+
+                var localCert = System.IO.Path.Combine(exePath, "localhost.pfx");
 
                 if (System.IO.File.Exists(localCert))
                 {
@@ -139,7 +131,7 @@ namespace Rnwood.Smtp4dev
 
             if (Settings.Default.EnableSTARTTLS)
             {
-                extensions.Add(_startTLSExtension);
+                extensions.Add(_startTlsExtension);
             }
 
             if (Settings.Default.EnableAUTH)
@@ -157,16 +149,13 @@ namespace Rnwood.Smtp4dev
 
         public long? GetMaximumMessageSize(IConnection connection)
         {
-            long value = Settings.Default.MaximumMessageSize;
+            var value = Settings.Default.MaximumMessageSize;
             return value != 0 ? value : (long?)null;
         }
 
-        public void OnSessionCompleted(IConnection connection, ISession Session)
+        public void OnSessionCompleted(IConnection connection, ISession session)
         {
-            if (SessionCompleted != null)
-            {
-                SessionCompleted(this, new SessionEventArgs(Session));
-            }
+            SessionCompleted?.Invoke(this, new SessionEventArgs(session));
         }
 
         public int GetReceiveTimeout(IConnection connection)

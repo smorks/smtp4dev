@@ -9,22 +9,29 @@ namespace Rnwood.Smtp4dev
         private Server _server;
         private Thread _t;
 
+        public ServerController()
+        {
+            Behaviour = new ServerBehaviour();
+        }
+
+        public ServerBehaviour Behaviour { get; }
+
         public void Restart()
         {
             if (_server.IsRunning)
             {
-                StopServer();
-                StartServer();
+                Stop();
+                Start();
             }
         }
 
-        private void StartServer()
+        public void Start()
         {
             _t = new Thread(ServerWork);
             _t.Start();
         }
 
-        private void StopServer()
+        public void Stop()
         {
             if (_server.IsRunning)
             {
@@ -37,24 +44,12 @@ namespace Rnwood.Smtp4dev
         {
             try
             {
-                ServerBehaviour b = new ServerBehaviour();
-                b.MessageReceived += OnMessageReceived;
-                b.SessionCompleted += OnSessionCompleted;
-
-                _server = new Server(b);
+                _server = new Server(Behaviour);
                 _server.Run();
             }
             catch (Exception exception)
             {
             }
-        }
-
-        private void OnSessionCompleted(object sender, SessionEventArgs e)
-        {
-        }
-
-        private void OnMessageReceived(object sender, MessageEventArgs e)
-        {
         }
     }
 }

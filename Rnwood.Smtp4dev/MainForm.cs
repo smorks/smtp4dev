@@ -15,43 +15,29 @@ namespace Rnwood.Smtp4dev
 {
     public partial class MainForm : Form
     {
-        private BindingList<MessageViewModel> _messages;
-        private BindingList<SessionViewModel> _sessions;
-
-        public MainForm()
+        internal MainForm(ServerController server, BindingList<MessageViewModel> messages, BindingList<SessionViewModel> sessions)
         {
             InitializeComponent();
 
             Icon = Resources.ListeningIcon;
+
+            Server = server;
+
+            Messages = messages;
+            Messages.ListChanged += _messages_ListChanged;
+            messageBindingSource.DataSource = Messages;
+
+            Sessions = sessions;
+            sessionBindingSource.DataSource = Sessions;
+
+            InitServer();
         }
 
-        public BindingList<MessageViewModel> Messages
-        {
-            get
-            {
-                return _messages;
-            }
-            set
-            {
-                _messages = value;
-                messageBindingSource.DataSource = _messages;
-            }
-        }
+        public BindingList<MessageViewModel> Messages { get; }
 
-        public BindingList<SessionViewModel> Sessions
-        {
-            get
-            {
-                return _sessions;
-            }
-            set
-            {
-                _sessions = value;
-                sessionBindingSource.DataSource = _sessions;
-            }
-        }
+        public BindingList<SessionViewModel> Sessions { get; }
 
-        internal ServerController ServerController;
+        internal ServerController Server { get; }
 
         public MessageViewModel SelectedMessage
         {
@@ -101,7 +87,7 @@ namespace Rnwood.Smtp4dev
 
         private void StartServer()
         {
-            //new Thread(ServerWork).Start();
+            Server.Start();
 
             trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, Messages.Count);
             trayIcon.Icon = Resources.ListeningIcon;
@@ -113,8 +99,8 @@ namespace Rnwood.Smtp4dev
 
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
         {
-            deleteAllMenuItem.Enabled = deleteAllButton.Enabled = viewLastMessageMenuItem.Enabled = _messages.Count > 0;
-            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, _messages.Count);
+            deleteAllMenuItem.Enabled = deleteAllButton.Enabled = viewLastMessageMenuItem.Enabled = Messages.Count > 0;
+            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, Messages.Count);
 
             if (e.ListChangedType == ListChangedType.ItemAdded && Settings.Default.ScrollMessages &&
                 messageGrid.RowCount > 0)
@@ -125,88 +111,64 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        /*
-        private void ServerWork()
+        private void InitServer()
         {
-            try
-            {
-                Application.DoEvents();
-
-                ServerBehaviour b = new ServerBehaviour();
-                b.MessageReceived += OnMessageReceived;
-                b.SessionCompleted += OnSessionCompleted;
-
-                _server = new Server(b);
-                _server.Run();
-            }
-            catch (Exception exception)
-            {
-                Invoke((MethodInvoker)(() =>
-                                            {
-
-                                                StopServer();
-
-                                                statusLabel.Text = "Server failed: " + exception.Message;
-
-                                                trayIcon.ShowBalloonTip(3000, "Server failed", exception.Message,
-                                                                        ToolTipIcon.Error);
-                                            }));
-            }
+            Server.Behaviour.MessageReceived += OnMessageReceived;
+            Server.Behaviour.SessionCompleted += OnSessionCompleted;
         }
-        */
 
         private void OnSessionCompleted(object sender, SessionEventArgs e)
         {
-            Invoke((MethodInvoker)(() => { _sessions.Add(new SessionViewModel(e.Session)); }));
+            Invoke(new Action(() => { Sessions.Add(new SessionViewModel(e.Session)); }));
         }
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             MessageViewModel message = new MessageViewModel(e.Message);
 
-            Invoke((MethodInvoker)(() =>
-                                        {
-                                            _messages.Add(message);
+            Invoke(new Action(() =>
+            {
+                Messages.Add(message);
 
-                                            if (Settings.Default.MaxMessages > 0)
-                                            {
-                                                while (_messages.Count > Settings.Default.MaxMessages)
-                                                {
-                                                    _messages.RemoveAt(0);
-                                                }
-                                            }
+                if (Settings.Default.MaxMessages > 0)
+                {
+                    while (Messages.Count > Settings.Default.MaxMessages)
+                    {
+                        Messages.RemoveAt(0);
+                    }
+                }
 
-                                            if (Settings.Default.AutoViewNewMessages ||
-                                                Settings.Default.AutoInspectNewMessages)
-                                            {
-                                                if (Settings.Default.AutoViewNewMessages)
-                                                {
-                                                    ViewMessage(message);
-                                                }
+                if (Settings.Default.AutoViewNewMessages ||
+                    Settings.Default.AutoInspectNewMessages)
+                {
+                    if (Settings.Default.AutoViewNewMessages)
+                    {
+                        ViewMessage(message);
+                    }
 
-                                                if (Settings.Default.AutoInspectNewMessages)
-                                                {
-                                                    InspectMessage(message);
-                                                }
-                                            }
-                                            else if (!Visible && Settings.Default.BalloonNotifications)
-                                            {
-                                                string body =
-                                                    string.Format(
-                                                        "From: {0}\nTo: {1}\nSubject: {2}\n<Click here to view more details>",
-                                                        message.From,
-                                                        message.To,
-                                                        message.Subject);
+                    if (Settings.Default.AutoInspectNewMessages)
+                    {
+                        InspectMessage(message);
+                    }
+                }
+                else if (!Visible && Settings.Default.BalloonNotifications)
+                {
+                    string body =
+                        string.Format(
+                            "From: {0}\nTo: {1}\nSubject: {2}\n<Click here to view more details>",
+                            message.From,
+                            message.To,
+                            message.Subject);
 
-                                                trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
-                                            }
+                    trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
+                }
 
-                                            if (Visible && Settings.Default.BringToFrontOnNewMessage)
-                                            {
-                                                BringToFront();
-                                                Activate();
-                                            }
-                                        }));
+                if (Visible && Settings.Default.BringToFrontOnNewMessage)
+                {
+                    BringToFront();
+                    Activate();
+                }
+            }));
         }
 
 
@@ -271,8 +233,8 @@ namespace Rnwood.Smtp4dev
 
         private void DeleteAllMessages()
         {
-            _messages.Clear();
-            _sessions.Clear();
+            Messages.Clear();
+            Sessions.Clear();
         }
 
         private void messageGrid_DoubleClick(object sender, EventArgs e)
@@ -302,17 +264,19 @@ namespace Rnwood.Smtp4dev
 
         private void StopServer()
         {
+            Server.Stop();
+
             trayIcon.Icon = Resources.NotListeningIcon;
             listenForConnectionsToolStripMenuItem.Checked = false;
             statusLabel.Text = "Not listening";
             runningPicture.Visible = stopListeningButton.Visible = false;
             notRunningPicture.Visible = startListeningButton.Visible = true;
-            trayIcon.Text = string.Format("smtp4dev (not listening)\n{1} messages", Settings.Default.PortNumber, _messages.Count);
+            trayIcon.Text = string.Format("smtp4dev (not listening)\n{0} messages", Messages.Count);
         }
 
         private void viewLastMessageMenuItem_Click(object sender, EventArgs e)
         {
-            ViewMessage(_messages.Last());
+            ViewMessage(Messages.Last());
         }
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -324,21 +288,21 @@ namespace Rnwood.Smtp4dev
         {
             if (new OptionsForm().ShowDialog() == DialogResult.OK)
             {
-                ServerController.Restart();
+                Server.Restart();
             }
         }
 
         private void trayIcon_BalloonTipClicked(object sender, EventArgs e)
         {
-            if (_messages.Count > 0)
+            if (Messages.Count > 0)
             {
                 if (Settings.Default.InspectOnBalloonClick)
                 {
-                    InspectMessage(_messages.Last());
+                    InspectMessage(Messages.Last());
                 }
                 else
                 {
-                    ViewMessage(_messages.Last());
+                    ViewMessage(Messages.Last());
                 }
             }
             else
@@ -375,12 +339,12 @@ namespace Rnwood.Smtp4dev
         {
             foreach (MessageViewModel message in SelectedMessages)
             {
-                _messages.Remove(message);
+                Messages.Remove(message);
             }
 
-            foreach (SessionViewModel session in _sessions.Where(s => !_messages.Any(mvm => s.Session.Messages.Contains(mvm.Message))).ToArray())
+            foreach (SessionViewModel session in Sessions.Where(s => !Messages.Any(mvm => s.Session.Messages.Contains(mvm.Message))).ToArray())
             {
-                _sessions.Remove(session);
+                Sessions.Remove(session);
             }
         }
 
@@ -469,11 +433,11 @@ namespace Rnwood.Smtp4dev
         {
             foreach (SessionViewModel session in SelectedSessions)
             {
-                _sessions.Remove(session);
+                Sessions.Remove(session);
 
-                foreach (MessageViewModel message in _messages.Where(mvm => session.Session.Messages.Any(m => mvm.Message == m)).ToArray())
+                foreach (MessageViewModel message in Messages.Where(mvm => session.Session.Messages.Any(m => mvm.Message == m)).ToArray())
                 {
-                    _messages.Remove(message);
+                    Messages.Remove(message);
                 }
             }
         }
