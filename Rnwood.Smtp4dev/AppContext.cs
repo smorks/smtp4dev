@@ -67,6 +67,7 @@ namespace Rnwood.Smtp4dev
 
         private void Menu_ViewMessages(object sender, System.EventArgs e)
         {
+            _form.Show();
         }
 
         private void Menu_ViewLastMessage(object sender, System.EventArgs e)
@@ -85,6 +86,10 @@ namespace Rnwood.Smtp4dev
 
         private void Menu_Options(object sender, System.EventArgs e)
         {
+            if (new OptionsForm().ShowDialog() == DialogResult.OK)
+            {
+                _server.Restart();
+            }
         }
 
         private void Menu_Exit(object sender, System.EventArgs e)
