@@ -45,6 +45,11 @@ namespace Rnwood.Smtp4dev
             }
         }
 
+        private void SetTrayIconText()
+        {
+            _trayIcon.Text = $"";
+        }
+
         private void CreateTrayIcon()
         {
             MenuViewMessages = new ToolStripMenuItem("View Messages", null, MenuViewMessages_Click)
@@ -69,7 +74,7 @@ namespace Rnwood.Smtp4dev
             {
                 Text = "smtp4dev",
                 ContextMenuStrip = contextMenu,
-                Icon = Properties.Resources.ListeningIcon
+                Icon = Properties.Resources.NotListeningIcon
             };
 
             _trayIcon.BalloonTipClicked += _trayIcon_BalloonTipClicked;
@@ -81,7 +86,19 @@ namespace Rnwood.Smtp4dev
         private void InitServer()
         {
             _server = new ServerController();
+            _server.ServerStarted += _server_ServerStarted;
+            _server.ServerStopped += _server_ServerStopped;
 
+        }
+
+        private void _server_ServerStopped(object sender, System.EventArgs e)
+        {
+            _trayIcon.Icon = Properties.Resources.NotListeningIcon;
+        }
+
+        private void _server_ServerStarted(object sender, System.EventArgs e)
+        {
+            _trayIcon.Icon = Properties.Resources.ListeningIcon;
         }
 
         private void InitMainForm()
@@ -92,6 +109,7 @@ namespace Rnwood.Smtp4dev
 
         private void _trayIcon_DoubleClick(object sender, System.EventArgs e)
         {
+            _form.Show();
         }
 
         private void _trayIcon_BalloonTipClicked(object sender, System.EventArgs e)
@@ -115,6 +133,14 @@ namespace Rnwood.Smtp4dev
 
         private void MenuListenForConnections_Click(object sender, System.EventArgs e)
         {
+            if (_server.IsRunning)
+            {
+                _server.Stop();
+            }
+            else
+            {
+                _server.Start();
+            }
         }
 
         private void MenuOptions_Click(object sender, System.EventArgs e)
@@ -127,6 +153,10 @@ namespace Rnwood.Smtp4dev
 
         private void MenuExit_Click(object sender, System.EventArgs e)
         {
+            if (_server.IsRunning)
+            {
+                _server.Stop();
+            }
             _trayIcon.Visible = false;
             Application.Exit();
         }

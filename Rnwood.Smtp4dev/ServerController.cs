@@ -9,12 +9,23 @@ namespace Rnwood.Smtp4dev
         private Server _server;
         private Thread _t;
 
+        public event EventHandler ServerStarted;
+        public event EventHandler ServerStopped;
+
         public ServerController()
         {
             Behaviour = new ServerBehaviour();
         }
 
         public ServerBehaviour Behaviour { get; }
+
+        public bool IsRunning
+        {
+            get
+            {
+                return _server != null ? _server.IsRunning : false;
+            }
+        }
 
         public void Restart()
         {
@@ -38,10 +49,14 @@ namespace Rnwood.Smtp4dev
                 _server.Stop();
                 _t.Join();
             }
+
+            ServerStopped?.Invoke(this, EventArgs.Empty);
         }
 
         private void ServerWork()
         {
+            ServerStarted?.Invoke(this, EventArgs.Empty);
+
             try
             {
                 _server = new Server(Behaviour);
