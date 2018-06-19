@@ -47,7 +47,7 @@ namespace Rnwood.Smtp4dev
                 _server = new Server(Behaviour);
                 _server.Run();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
             }
         }

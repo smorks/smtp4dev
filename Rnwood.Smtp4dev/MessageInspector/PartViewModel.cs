@@ -163,7 +163,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
                 {
                     using (FileStream stream = File.OpenWrite(dialog.FileName))
                     {
-                        mp.ContentObject.DecodeTo(stream);
+                        mp.Content.DecodeTo(stream);
                     }
                 }
             }
@@ -187,7 +187,7 @@ namespace Rnwood.Smtp4dev.MessageInspector
 
                 using (FileStream stream = msgFile.OpenWrite())
                 {
-                    mp.ContentObject.DecodeTo(stream);
+                    mp.Content.DecodeTo(stream);
                 }
 
                 var p = new Process()

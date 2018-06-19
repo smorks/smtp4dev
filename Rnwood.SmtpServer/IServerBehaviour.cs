@@ -107,7 +107,7 @@ namespace Rnwood.SmtpServer
         /// <param name="connection">The connection.</param>
         /// <param name="authMechanism">The auth mechanism.</param>
         /// <returns>
-        /// 	<c>true if the specified auth mechanism should be enabled otherwise, <c>false</c>.
+        /// 	<c>true</c> if the specified auth mechanism should be enabled otherwise, <c>false</c>.
         /// </returns>
         bool IsAuthMechanismEnabled(IConnection connection, IAuthMechanism authMechanism);
 
