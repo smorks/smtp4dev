@@ -12,24 +12,57 @@ namespace Rnwood.Smtp4dev
         private ServerController _server;
         private MainForm _form;
 
+        private ToolStripMenuItem MenuViewMessages;
+        private ToolStripMenuItem MenuViewLastMessage;
+        private ToolStripMenuItem MenuDeleteAllMessages;
+
         public AppContext()
         {
             CreateTrayIcon();
             InitServer();
             InitMainForm();
+            EnableContextMenuItems();
+
+            _messages.ListChanged += _messages_ListChanged;
+        }
+
+        private void _messages_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            EnableContextMenuItems();
+        }
+
+        private void EnableContextMenuItems()
+        {
+            if (_messages.Count == 0)
+            {
+                MenuViewLastMessage.Enabled = false;
+                MenuDeleteAllMessages.Enabled = false;
+            }
+            else
+            {
+                MenuViewLastMessage.Enabled = true;
+                MenuDeleteAllMessages.Enabled = true;
+            }
         }
 
         private void CreateTrayIcon()
         {
+            MenuViewMessages = new ToolStripMenuItem("View Messages", null, MenuViewMessages_Click)
+            {
+                Font = new System.Drawing.Font(System.Drawing.SystemFonts.MenuFont, System.Drawing.FontStyle.Bold)
+            };
+            MenuViewLastMessage = new ToolStripMenuItem("View Last Message", null, MenuViewLastMessage_Click);
+            MenuDeleteAllMessages = new ToolStripMenuItem("Delete All Messages", null, MenuDeleteAllMessages_Click);
+
             var contextMenu = new ContextMenuStrip();
             contextMenu.Items.AddRange(new[]
             {
-                new ToolStripMenuItem("View Messages", null, Menu_ViewMessages),
-                new ToolStripMenuItem("View Last Message", null, Menu_ViewLastMessage),
-                new ToolStripMenuItem("Delete All Messages", null, Menu_DeleteAllMessages),
-                new ToolStripMenuItem("Listen for Connections", null, Menu_ListenForConnections),
-                new ToolStripMenuItem("Options", null, Menu_Options),
-                new ToolStripMenuItem("Exit", null, Menu_Exit)
+                MenuViewMessages,
+                MenuViewLastMessage,
+                MenuDeleteAllMessages,
+                new ToolStripMenuItem("Listen for Connections", null, MenuListenForConnections_Click),
+                new ToolStripMenuItem("Options", null, MenuOptions_Click),
+                new ToolStripMenuItem("Exit", null, MenuExit_Click)
             });
 
             _trayIcon = new NotifyIcon()
@@ -65,26 +98,26 @@ namespace Rnwood.Smtp4dev
         {
         }
 
-        private void Menu_ViewMessages(object sender, System.EventArgs e)
+        private void MenuViewMessages_Click(object sender, System.EventArgs e)
         {
             _form.Show();
         }
 
-        private void Menu_ViewLastMessage(object sender, System.EventArgs e)
+        private void MenuViewLastMessage_Click(object sender, System.EventArgs e)
         {
         }
 
-        private void Menu_DeleteAllMessages(object sender, System.EventArgs e)
+        private void MenuDeleteAllMessages_Click(object sender, System.EventArgs e)
         {
             _messages.Clear();
             _sessions.Clear();
         }
 
-        private void Menu_ListenForConnections(object sender, System.EventArgs e)
+        private void MenuListenForConnections_Click(object sender, System.EventArgs e)
         {
         }
 
-        private void Menu_Options(object sender, System.EventArgs e)
+        private void MenuOptions_Click(object sender, System.EventArgs e)
         {
             if (new OptionsForm().ShowDialog() == DialogResult.OK)
             {
@@ -92,7 +125,7 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void Menu_Exit(object sender, System.EventArgs e)
+        private void MenuExit_Click(object sender, System.EventArgs e)
         {
             _trayIcon.Visible = false;
             Application.Exit();
