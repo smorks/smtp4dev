@@ -30,14 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.trayIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.showMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewLastMessageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listenForConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.messageGrid = new System.Windows.Forms.DataGridView();
             this.Received = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.subjectDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -65,16 +57,15 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.sessionsGrid = new System.Windows.Forms.DataGridView();
+            this.StartDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SecureConnection = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.NumberOfMessages = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sessionBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.viewSessionButton = new System.Windows.Forms.Button();
             this.deleteSessionButton = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.StartDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.clientDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SecureConnection = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.NumberOfMessages = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.trayIconContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messageGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messageBindingSource)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
@@ -91,76 +82,6 @@
             this.flowLayoutPanel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // trayIcon
-            // 
-            this.trayIcon.ContextMenuStrip = this.trayIconContextMenuStrip;
-            this.trayIcon.Text = "smtp4dev";
-            this.trayIcon.Visible = true;
-            this.trayIcon.BalloonTipClicked += new System.EventHandler(this.trayIcon_BalloonTipClicked);
-            this.trayIcon.DoubleClick += new System.EventHandler(this.trayIcon_DoubleClick);
-            // 
-            // trayIconContextMenuStrip
-            // 
-            this.trayIconContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showMenuItem,
-            this.viewLastMessageMenuItem,
-            this.deleteAllMenuItem,
-            this.listenForConnectionsToolStripMenuItem,
-            this.optionsMenuItem,
-            this.exitMenuItem});
-            this.trayIconContextMenuStrip.Name = "contextMenuStrip";
-            this.trayIconContextMenuStrip.Size = new System.Drawing.Size(189, 136);
-            // 
-            // showMenuItem
-            // 
-            this.showMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showMenuItem.Name = "showMenuItem";
-            this.showMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.showMenuItem.Text = "View Messages";
-            this.showMenuItem.Click += new System.EventHandler(this.trayIcon_DoubleClick);
-            // 
-            // viewLastMessageMenuItem
-            // 
-            this.viewLastMessageMenuItem.Enabled = false;
-            this.viewLastMessageMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.viewLastMessageMenuItem.Name = "viewLastMessageMenuItem";
-            this.viewLastMessageMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.viewLastMessageMenuItem.Text = "View Last Message";
-            this.viewLastMessageMenuItem.Click += new System.EventHandler(this.viewLastMessageMenuItem_Click);
-            // 
-            // deleteAllMenuItem
-            // 
-            this.deleteAllMenuItem.Enabled = false;
-            this.deleteAllMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.deleteAllMenuItem.Name = "deleteAllMenuItem";
-            this.deleteAllMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.deleteAllMenuItem.Text = "Delete All Messages";
-            this.deleteAllMenuItem.Click += new System.EventHandler(this.clearAllEmailsToolStripMenuItem_Click);
-            // 
-            // listenForConnectionsToolStripMenuItem
-            // 
-            this.listenForConnectionsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listenForConnectionsToolStripMenuItem.Name = "listenForConnectionsToolStripMenuItem";
-            this.listenForConnectionsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.listenForConnectionsToolStripMenuItem.Text = "Listen for connections";
-            this.listenForConnectionsToolStripMenuItem.Click += new System.EventHandler(this.listenForConnectionsToolStripMenuItem_Click);
-            // 
-            // optionsMenuItem
-            // 
-            this.optionsMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.optionsMenuItem.Name = "optionsMenuItem";
-            this.optionsMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.optionsMenuItem.Text = "Options";
-            this.optionsMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
-            // 
-            // exitMenuItem
-            // 
-            this.exitMenuItem.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.exitMenuItem.Text = "Exit";
-            this.exitMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // messageGrid
             // 
@@ -184,9 +105,9 @@
             this.messageGrid.Size = new System.Drawing.Size(494, 197);
             this.messageGrid.TabIndex = 1;
             this.messageGrid.VirtualMode = true;
-            this.messageGrid.DoubleClick += new System.EventHandler(this.messageGrid_DoubleClick);
             this.messageGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.messageGrid_CellFormatting);
             this.messageGrid.SelectionChanged += new System.EventHandler(this.messageGrid_SelectionChanged);
+            this.messageGrid.DoubleClick += new System.EventHandler(this.messageGrid_DoubleClick);
             // 
             // Received
             // 
@@ -503,6 +424,41 @@
             this.sessionsGrid.TabIndex = 0;
             this.sessionsGrid.SelectionChanged += new System.EventHandler(this.sessionsGrid_SelectionChanged);
             // 
+            // StartDate
+            // 
+            this.StartDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.StartDate.DataPropertyName = "StartDate";
+            this.StartDate.HeaderText = "Date/Time";
+            this.StartDate.Name = "StartDate";
+            this.StartDate.ReadOnly = true;
+            this.StartDate.Width = 83;
+            // 
+            // clientDataGridViewTextBoxColumn
+            // 
+            this.clientDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.clientDataGridViewTextBoxColumn.DataPropertyName = "Client";
+            this.clientDataGridViewTextBoxColumn.HeaderText = "Client";
+            this.clientDataGridViewTextBoxColumn.Name = "clientDataGridViewTextBoxColumn";
+            this.clientDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // SecureConnection
+            // 
+            this.SecureConnection.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.SecureConnection.DataPropertyName = "SecureConnection";
+            this.SecureConnection.HeaderText = "Secure";
+            this.SecureConnection.Name = "SecureConnection";
+            this.SecureConnection.ReadOnly = true;
+            this.SecureConnection.Width = 47;
+            // 
+            // NumberOfMessages
+            // 
+            this.NumberOfMessages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.NumberOfMessages.DataPropertyName = "NumberOfMessages";
+            this.NumberOfMessages.HeaderText = "No of Msgs";
+            this.NumberOfMessages.Name = "NumberOfMessages";
+            this.NumberOfMessages.ReadOnly = true;
+            this.NumberOfMessages.Width = 91;
+            // 
             // sessionBindingSource
             // 
             this.sessionBindingSource.DataSource = typeof(Rnwood.Smtp4dev.SessionViewModel);
@@ -555,41 +511,6 @@
             this.panel2.Size = new System.Drawing.Size(514, 264);
             this.panel2.TabIndex = 2;
             // 
-            // StartDate
-            // 
-            this.StartDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.StartDate.DataPropertyName = "StartDate";
-            this.StartDate.HeaderText = "Date/Time";
-            this.StartDate.Name = "StartDate";
-            this.StartDate.ReadOnly = true;
-            this.StartDate.Width = 83;
-            // 
-            // clientDataGridViewTextBoxColumn
-            // 
-            this.clientDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.clientDataGridViewTextBoxColumn.DataPropertyName = "Client";
-            this.clientDataGridViewTextBoxColumn.HeaderText = "Client";
-            this.clientDataGridViewTextBoxColumn.Name = "clientDataGridViewTextBoxColumn";
-            this.clientDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // SecureConnection
-            // 
-            this.SecureConnection.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.SecureConnection.DataPropertyName = "SecureConnection";
-            this.SecureConnection.HeaderText = "Secure";
-            this.SecureConnection.Name = "SecureConnection";
-            this.SecureConnection.ReadOnly = true;
-            this.SecureConnection.Width = 47;
-            // 
-            // NumberOfMessages
-            // 
-            this.NumberOfMessages.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.NumberOfMessages.DataPropertyName = "NumberOfMessages";
-            this.NumberOfMessages.HeaderText = "No of Msgs";
-            this.NumberOfMessages.Name = "NumberOfMessages";
-            this.NumberOfMessages.ReadOnly = true;
-            this.NumberOfMessages.Width = 91;
-            // 
             // MainForm
             // 
             this.AcceptButton = this.viewButton;
@@ -603,10 +524,9 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "smtp4dev";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.MainForm_VisibleChanged);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.trayIconContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messageGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messageBindingSource)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
@@ -634,19 +554,11 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.NotifyIcon trayIcon;
-        private System.Windows.Forms.ContextMenuStrip trayIconContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
         private System.Windows.Forms.DataGridView messageGrid;
         private System.Windows.Forms.BindingSource messageBindingSource;
         private System.Windows.Forms.Button deleteAllButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button viewButton;
-        private System.Windows.Forms.ToolStripMenuItem deleteAllMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewLastMessageMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionsMenuItem;
         private System.Windows.Forms.Button optionsButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button saveButton;
@@ -661,7 +573,6 @@
         private System.Windows.Forms.Button startListeningButton;
         private System.Windows.Forms.PictureBox runningPicture;
         private System.Windows.Forms.PictureBox notRunningPicture;
-        private System.Windows.Forms.ToolStripMenuItem listenForConnectionsToolStripMenuItem;
         private System.Windows.Forms.Button inspectMessageButton;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

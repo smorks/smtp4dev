@@ -89,9 +89,6 @@ namespace Rnwood.Smtp4dev
         {
             Server.Start();
 
-            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, Messages.Count);
-            trayIcon.Icon = Resources.ListeningIcon;
-            listenForConnectionsToolStripMenuItem.Checked = true;
             statusLabel.Text = string.Format("Listening on port {0}", Settings.Default.PortNumber);
             runningPicture.Visible = stopListeningButton.Visible = true;
             notRunningPicture.Visible = startListeningButton.Visible = false;
@@ -99,8 +96,7 @@ namespace Rnwood.Smtp4dev
 
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
         {
-            deleteAllMenuItem.Enabled = deleteAllButton.Enabled = viewLastMessageMenuItem.Enabled = Messages.Count > 0;
-            trayIcon.Text = string.Format("smtp4dev (listening on :{0})\n{1} messages", Settings.Default.PortNumber, Messages.Count);
+            deleteAllButton.Enabled = Messages.Count > 0;
 
             if (e.ListChangedType == ListChangedType.ItemAdded && Settings.Default.ScrollMessages &&
                 messageGrid.RowCount > 0)
@@ -160,7 +156,7 @@ namespace Rnwood.Smtp4dev
                             message.To,
                             message.Subject);
 
-                    trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
+                    // trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
                 }
 
                 if (Visible && Settings.Default.BringToFrontOnNewMessage)
@@ -169,17 +165,6 @@ namespace Rnwood.Smtp4dev
                     Activate();
                 }
             }));
-        }
-
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Quit();
-        }
-
-        private void trayIcon_DoubleClick(object sender, EventArgs e)
-        {
-            Visible = true;
         }
 
         private void viewButton_Click(object sender, EventArgs e)
@@ -242,15 +227,8 @@ namespace Rnwood.Smtp4dev
             ViewSelectedMessages();
         }
 
-        private void clearAllEmailsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DeleteAllMessages();
-        }
-
         private void MainForm_VisibleChanged(object sender, EventArgs e)
         {
-            trayIcon.Visible = !Visible;
-
             if (Visible)
             {
                 WindowState = FormWindowState.Normal;
@@ -266,22 +244,9 @@ namespace Rnwood.Smtp4dev
         {
             Server.Stop();
 
-            trayIcon.Icon = Resources.NotListeningIcon;
-            listenForConnectionsToolStripMenuItem.Checked = false;
             statusLabel.Text = "Not listening";
             runningPicture.Visible = stopListeningButton.Visible = false;
             notRunningPicture.Visible = startListeningButton.Visible = true;
-            trayIcon.Text = string.Format("smtp4dev (not listening)\n{0} messages", Messages.Count);
-        }
-
-        private void viewLastMessageMenuItem_Click(object sender, EventArgs e)
-        {
-            ViewMessage(Messages.Last());
-        }
-
-        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            EditOptions();
         }
 
         private void EditOptions()
@@ -356,19 +321,6 @@ namespace Rnwood.Smtp4dev
         private void startListeningButton_Click(object sender, EventArgs e)
         {
             StartServer();
-        }
-
-
-        private void listenForConnectionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listenForConnectionsToolStripMenuItem.Checked)
-            {
-                StopServer();
-            }
-            else
-            {
-                StartServer();
-            }
         }
 
         private void messageGrid_SelectionChanged(object sender, EventArgs e)
