@@ -339,5 +339,14 @@ namespace Rnwood.Smtp4dev
                 notRunningPicture.Visible = startListeningButton.Visible = false;
             }
         }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+        }
     }
 }
