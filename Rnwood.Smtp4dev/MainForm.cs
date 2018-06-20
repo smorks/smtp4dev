@@ -21,6 +21,8 @@ namespace Rnwood.Smtp4dev
             Icon = Resources.ListeningIcon;
 
             Server = server;
+            Server.ServerStarted += Server_ServerStarted;
+            server.ServerStopped += Server_ServerStopped;
 
             Messages = messages;
             Messages.ListChanged += _messages_ListChanged;
@@ -85,10 +87,6 @@ namespace Rnwood.Smtp4dev
         private void StartServer()
         {
             Server.Start();
-
-            statusLabel.Text = string.Format("Listening on port {0}", Settings.Default.PortNumber);
-            runningPicture.Visible = stopListeningButton.Visible = true;
-            notRunningPicture.Visible = startListeningButton.Visible = false;
         }
 
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
@@ -173,17 +171,9 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-        }
-
         private void StopServer()
         {
             Server.Stop();
-
-            statusLabel.Text = "Not listening";
-            runningPicture.Visible = stopListeningButton.Visible = false;
-            notRunningPicture.Visible = startListeningButton.Visible = true;
         }
 
         private void EditOptions()
@@ -309,6 +299,44 @@ namespace Rnwood.Smtp4dev
                 {
                     Messages.Remove(message);
                 }
+            }
+        }
+
+        private void Server_ServerStopped(object sender, EventArgs e)
+        {
+            SetServerStoppedControls();
+        }
+
+        private void Server_ServerStarted(object sender, EventArgs e)
+        {
+            SetServerStartedControls();
+        }
+
+        private void SetServerStoppedControls()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(SetServerStoppedControls));
+            }
+            else
+            {
+                statusLabel.Text = "Not listening";
+                runningPicture.Visible = stopListeningButton.Visible = false;
+                notRunningPicture.Visible = startListeningButton.Visible = true;
+            }
+        }
+
+        private void SetServerStartedControls()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(SetServerStartedControls));
+            }
+            else
+            {
+                statusLabel.Text = $"Listening on port {Settings.Default.PortNumber}";
+                runningPicture.Visible = stopListeningButton.Visible = true;
+                notRunningPicture.Visible = startListeningButton.Visible = false;
             }
         }
     }

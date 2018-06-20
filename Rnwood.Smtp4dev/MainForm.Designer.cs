@@ -524,7 +524,6 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "smtp4dev";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.MainForm_VisibleChanged);
             ((System.ComponentModel.ISupportInitialize)(this.messageGrid)).EndInit();
