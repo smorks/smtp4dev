@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using Rnwood.Smtp4dev.MessageInspector;
 using Rnwood.Smtp4dev.Properties;
-using Rnwood.SmtpServer;
 
 namespace Rnwood.Smtp4dev
 {
@@ -29,8 +28,6 @@ namespace Rnwood.Smtp4dev
 
             Sessions = sessions;
             sessionBindingSource.DataSource = Sessions;
-
-            InitServer();
         }
 
         public BindingList<MessageViewModel> Messages { get; }
@@ -107,66 +104,6 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void InitServer()
-        {
-            Server.Behaviour.MessageReceived += OnMessageReceived;
-            Server.Behaviour.SessionCompleted += OnSessionCompleted;
-        }
-
-        private void OnSessionCompleted(object sender, SessionEventArgs e)
-        {
-            Invoke(new Action(() => { Sessions.Add(new SessionViewModel(e.Session)); }));
-        }
-
-        private void OnMessageReceived(object sender, MessageEventArgs e)
-        {
-            MessageViewModel message = new MessageViewModel(e.Message);
-
-            Invoke(new Action(() =>
-            {
-                Messages.Add(message);
-
-                if (Settings.Default.MaxMessages > 0)
-                {
-                    while (Messages.Count > Settings.Default.MaxMessages)
-                    {
-                        Messages.RemoveAt(0);
-                    }
-                }
-
-                if (Settings.Default.AutoViewNewMessages ||
-                    Settings.Default.AutoInspectNewMessages)
-                {
-                    if (Settings.Default.AutoViewNewMessages)
-                    {
-                        ViewMessage(message);
-                    }
-
-                    if (Settings.Default.AutoInspectNewMessages)
-                    {
-                        InspectMessage(message);
-                    }
-                }
-                else if (!Visible && Settings.Default.BalloonNotifications)
-                {
-                    string body =
-                        string.Format(
-                            "From: {0}\nTo: {1}\nSubject: {2}\n<Click here to view more details>",
-                            message.From,
-                            message.To,
-                            message.Subject);
-
-                    // trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
-                }
-
-                if (Visible && Settings.Default.BringToFrontOnNewMessage)
-                {
-                    BringToFront();
-                    Activate();
-                }
-            }));
-        }
-
         private void viewButton_Click(object sender, EventArgs e)
         {
             ViewSelectedMessages();
@@ -180,7 +117,7 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void ViewMessage(MessageViewModel message)
+        internal void ViewMessage(MessageViewModel message)
         {
             if (Settings.Default.UseMessageInspectorOnDoubleClick)
             {
@@ -254,25 +191,6 @@ namespace Rnwood.Smtp4dev
             if (new OptionsForm().ShowDialog() == DialogResult.OK)
             {
                 Server.Restart();
-            }
-        }
-
-        private void trayIcon_BalloonTipClicked(object sender, EventArgs e)
-        {
-            if (Messages.Count > 0)
-            {
-                if (Settings.Default.InspectOnBalloonClick)
-                {
-                    InspectMessage(Messages.Last());
-                }
-                else
-                {
-                    ViewMessage(Messages.Last());
-                }
-            }
-            else
-            {
-                Visible = true;
             }
         }
 
@@ -358,7 +276,7 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void InspectMessage(MessageViewModel message)
+        internal void InspectMessage(MessageViewModel message)
         {
             message.MarkAsViewed();
 

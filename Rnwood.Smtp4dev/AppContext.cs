@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Rnwood.Smtp4dev
@@ -13,10 +15,10 @@ namespace Rnwood.Smtp4dev
         private MainForm _form;
         private ContextMenuStrip _contextMenu;
 
-        private ToolStripMenuItem MenuViewMessages;
-        private ToolStripMenuItem MenuViewLastMessage;
-        private ToolStripMenuItem MenuDeleteAllMessages;
-        private ToolStripMenuItem MenuListenForConnections;
+        private ToolStripMenuItem _menuViewMessages;
+        private ToolStripMenuItem _menuViewLastMessage;
+        private ToolStripMenuItem _menuDeleteAllMessages;
+        private ToolStripMenuItem _menuListenForConnections;
 
         public AppContext()
         {
@@ -44,13 +46,13 @@ namespace Rnwood.Smtp4dev
         {
             if (_messages.Count == 0)
             {
-                MenuViewLastMessage.Enabled = false;
-                MenuDeleteAllMessages.Enabled = false;
+                _menuViewLastMessage.Enabled = false;
+                _menuDeleteAllMessages.Enabled = false;
             }
             else
             {
-                MenuViewLastMessage.Enabled = true;
-                MenuDeleteAllMessages.Enabled = true;
+                _menuViewLastMessage.Enabled = true;
+                _menuDeleteAllMessages.Enabled = true;
             }
         }
 
@@ -62,21 +64,21 @@ namespace Rnwood.Smtp4dev
 
         private void CreateTrayIcon()
         {
-            MenuViewMessages = new ToolStripMenuItem("View Messages", null, MenuViewMessages_Click)
+            _menuViewMessages = new ToolStripMenuItem("View Messages", null, MenuViewMessages_Click)
             {
                 Font = new System.Drawing.Font(System.Drawing.SystemFonts.MenuFont, System.Drawing.FontStyle.Bold)
             };
-            MenuViewLastMessage = new ToolStripMenuItem("View Last Message", null, MenuViewLastMessage_Click);
-            MenuDeleteAllMessages = new ToolStripMenuItem("Delete All Messages", null, MenuDeleteAllMessages_Click);
-            MenuListenForConnections = new ToolStripMenuItem("Listen for Connections", null, MenuListenForConnections_Click);
+            _menuViewLastMessage = new ToolStripMenuItem("View Last Message", null, MenuViewLastMessage_Click);
+            _menuDeleteAllMessages = new ToolStripMenuItem("Delete All Messages", null, MenuDeleteAllMessages_Click);
+            _menuListenForConnections = new ToolStripMenuItem("Listen for Connections", null, MenuListenForConnections_Click);
 
             _contextMenu = new ContextMenuStrip();
             _contextMenu.Items.AddRange(new[]
             {
-                MenuViewMessages,
-                MenuViewLastMessage,
-                MenuDeleteAllMessages,
-                MenuListenForConnections,
+                _menuViewMessages,
+                _menuViewLastMessage,
+                _menuDeleteAllMessages,
+                _menuListenForConnections,
                 new ToolStripMenuItem("Options", null, MenuOptions_Click),
                 new ToolStripMenuItem("Exit", null, MenuExit_Click)
             });
@@ -99,7 +101,54 @@ namespace Rnwood.Smtp4dev
             _server = new ServerController();
             _server.ServerStarted += _server_ServerStarted;
             _server.ServerStopped += _server_ServerStopped;
+            _server.Behaviour.MessageReceived += _server_Behaviour_MessageReceived;
+            _server.Behaviour.SessionCompleted += _server_Behaviour_SessionCompleted;
+        }
 
+        private void _server_Behaviour_SessionCompleted(object sender, SmtpServer.SessionEventArgs e)
+        {
+            _sessions.Add(new SessionViewModel(e.Session));
+        }
+
+        private void _server_Behaviour_MessageReceived(object sender, SmtpServer.MessageEventArgs e)
+        {
+            var message = new MessageViewModel(e.Message);
+
+            _messages.Add(message);
+
+            if (Properties.Settings.Default.MaxMessages > 0)
+            {
+                while (_messages.Count > Properties.Settings.Default.MaxMessages)
+                {
+                    _messages.RemoveAt(0);
+                }
+            }
+
+            if (Properties.Settings.Default.AutoViewNewMessages ||
+                Properties.Settings.Default.AutoInspectNewMessages)
+            {
+                if (Properties.Settings.Default.AutoViewNewMessages)
+                {
+                    _form.ViewMessage(message);
+                }
+
+                if (Properties.Settings.Default.AutoInspectNewMessages)
+                {
+                    _form.InspectMessage(message);
+                }
+            }
+            else if (!_form.Visible && Properties.Settings.Default.BalloonNotifications)
+            {
+                string body = $"From: {message.From}\nTo: {message.To}\nSubject: {message.Subject}\n<Click here to view more details>";
+
+                _trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
+            }
+
+            if (_form.Visible && Properties.Settings.Default.BringToFrontOnNewMessage)
+            {
+                _form.BringToFront();
+                _form.Activate();
+            }
         }
 
         private void _server_ServerStopped(object sender, System.EventArgs e)
@@ -120,11 +169,11 @@ namespace Rnwood.Smtp4dev
         {
             if (_contextMenu.InvokeRequired)
             {
-                _contextMenu.Invoke(new System.Action(() => MenuListenForConnections.Checked = listening));
+                _contextMenu.Invoke(new System.Action(() => _menuListenForConnections.Checked = listening));
             }
             else
             {
-                MenuListenForConnections.Checked = listening;
+                _menuListenForConnections.Checked = listening;
             }
         }
 
@@ -141,6 +190,21 @@ namespace Rnwood.Smtp4dev
 
         private void _trayIcon_BalloonTipClicked(object sender, System.EventArgs e)
         {
+            if (_messages.Count > 0)
+            {
+                if (Properties.Settings.Default.InspectOnBalloonClick)
+                {
+                    _form.InspectMessage(_messages.Last());
+                }
+                else
+                {
+                    _form.ViewMessage(_messages.Last());
+                }
+            }
+            else
+            {
+                _form.Visible = true;
+            }
         }
 
         private void MenuViewMessages_Click(object sender, System.EventArgs e)
