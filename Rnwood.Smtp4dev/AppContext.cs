@@ -11,10 +11,12 @@ namespace Rnwood.Smtp4dev
         private readonly BindingList<SessionViewModel> _sessions = new BindingList<SessionViewModel>();
         private ServerController _server;
         private MainForm _form;
+        private ContextMenuStrip _contextMenu;
 
         private ToolStripMenuItem MenuViewMessages;
         private ToolStripMenuItem MenuViewLastMessage;
         private ToolStripMenuItem MenuDeleteAllMessages;
+        private ToolStripMenuItem MenuListenForConnections;
 
         public AppContext()
         {
@@ -25,6 +27,11 @@ namespace Rnwood.Smtp4dev
             SetTrayIconText();
 
             _messages.ListChanged += _messages_ListChanged;
+
+            if (Properties.Settings.Default.ListenOnStartup)
+            {
+                _server.Start();
+            }
         }
 
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
@@ -61,14 +68,15 @@ namespace Rnwood.Smtp4dev
             };
             MenuViewLastMessage = new ToolStripMenuItem("View Last Message", null, MenuViewLastMessage_Click);
             MenuDeleteAllMessages = new ToolStripMenuItem("Delete All Messages", null, MenuDeleteAllMessages_Click);
+            MenuListenForConnections = new ToolStripMenuItem("Listen for Connections", null, MenuListenForConnections_Click);
 
-            var contextMenu = new ContextMenuStrip();
-            contextMenu.Items.AddRange(new[]
+            _contextMenu = new ContextMenuStrip();
+            _contextMenu.Items.AddRange(new[]
             {
                 MenuViewMessages,
                 MenuViewLastMessage,
                 MenuDeleteAllMessages,
-                new ToolStripMenuItem("Listen for Connections", null, MenuListenForConnections_Click),
+                MenuListenForConnections,
                 new ToolStripMenuItem("Options", null, MenuOptions_Click),
                 new ToolStripMenuItem("Exit", null, MenuExit_Click)
             });
@@ -76,7 +84,7 @@ namespace Rnwood.Smtp4dev
             _trayIcon = new NotifyIcon()
             {
                 Text = "smtp4dev",
-                ContextMenuStrip = contextMenu,
+                ContextMenuStrip = _contextMenu,
                 Icon = Properties.Resources.NotListeningIcon
             };
 
@@ -98,12 +106,26 @@ namespace Rnwood.Smtp4dev
         {
             SetTrayIconText();
             _trayIcon.Icon = Properties.Resources.NotListeningIcon;
+            SetMenuListening(false);
         }
 
         private void _server_ServerStarted(object sender, System.EventArgs e)
         {
             SetTrayIconText();
             _trayIcon.Icon = Properties.Resources.ListeningIcon;
+            SetMenuListening(true);
+        }
+
+        private void SetMenuListening(bool listening)
+        {
+            if (_contextMenu.InvokeRequired)
+            {
+                _contextMenu.Invoke(new System.Action(() => MenuListenForConnections.Checked = listening));
+            }
+            else
+            {
+                MenuListenForConnections.Checked = listening;
+            }
         }
 
         private void InitMainForm()
