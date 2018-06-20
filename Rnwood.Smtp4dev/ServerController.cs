@@ -8,6 +8,7 @@ namespace Rnwood.Smtp4dev
     {
         private Server _server;
         private Thread _t;
+        private bool isRunning = false;
 
         public event EventHandler ServerStarted;
         public event EventHandler ServerStopped;
@@ -23,7 +24,7 @@ namespace Rnwood.Smtp4dev
         {
             get
             {
-                return _server != null ? _server.IsRunning : false;
+                return isRunning;
             }
         }
 
@@ -38,8 +39,11 @@ namespace Rnwood.Smtp4dev
 
         public void Start()
         {
-            _t = new Thread(ServerWork);
-            _t.Start();
+            if (!isRunning)
+            {
+                _t = new Thread(ServerWork);
+                _t.Start();
+            }
         }
 
         public void Stop()
@@ -55,6 +59,7 @@ namespace Rnwood.Smtp4dev
 
         private void ServerWork()
         {
+            isRunning = true;
             ServerStarted?.Invoke(this, EventArgs.Empty);
 
             try
@@ -65,6 +70,8 @@ namespace Rnwood.Smtp4dev
             catch (Exception)
             {
             }
+
+            isRunning = false;
         }
     }
 }

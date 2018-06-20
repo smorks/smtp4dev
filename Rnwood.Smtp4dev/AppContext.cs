@@ -22,6 +22,7 @@ namespace Rnwood.Smtp4dev
             InitServer();
             InitMainForm();
             EnableContextMenuItems();
+            SetTrayIconText();
 
             _messages.ListChanged += _messages_ListChanged;
         }
@@ -29,6 +30,7 @@ namespace Rnwood.Smtp4dev
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
         {
             EnableContextMenuItems();
+            SetTrayIconText();
         }
 
         private void EnableContextMenuItems()
@@ -47,7 +49,8 @@ namespace Rnwood.Smtp4dev
 
         private void SetTrayIconText()
         {
-            _trayIcon.Text = $"";
+            var listening = _server.IsRunning ? $"listening on :{Properties.Settings.Default.PortNumber}" : "not listening";
+            _trayIcon.Text = $"{listening}\n{_messages.Count} messages";
         }
 
         private void CreateTrayIcon()
@@ -93,11 +96,13 @@ namespace Rnwood.Smtp4dev
 
         private void _server_ServerStopped(object sender, System.EventArgs e)
         {
+            SetTrayIconText();
             _trayIcon.Icon = Properties.Resources.NotListeningIcon;
         }
 
         private void _server_ServerStarted(object sender, System.EventArgs e)
         {
+            SetTrayIconText();
             _trayIcon.Icon = Properties.Resources.ListeningIcon;
         }
 
