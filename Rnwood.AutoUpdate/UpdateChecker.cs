@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net;
 using System.Xml.Serialization;
 using System.IO;
@@ -15,6 +13,7 @@ namespace Rnwood.AutoUpdate
         {
             ReleaseFileUrl = releaseFileUrl;
             CurrentVersion = currentVersion;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         public Uri ReleaseFileUrl { get; private set; }
@@ -27,7 +26,7 @@ namespace Rnwood.AutoUpdate
             if (latestRelease != null && latestRelease.Version > CurrentVersion)
             {
                 UpdateAvailableForm form = new UpdateAvailableForm(latestRelease, CurrentVersion);
-                if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (form.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
