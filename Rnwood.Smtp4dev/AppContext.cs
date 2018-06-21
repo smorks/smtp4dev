@@ -214,6 +214,17 @@ namespace Rnwood.Smtp4dev
 
         private void MenuViewLastMessage_Click(object sender, System.EventArgs e)
         {
+            if (_messages.Count > 0)
+            {
+                if (Properties.Settings.Default.UseMessageInspectorOnDoubleClick)
+                {
+                    _form.InspectMessage(_messages.Last());
+                }
+                else
+                {
+                    _form.ViewMessage(_messages.Last());
+                }
+            }
         }
 
         private void MenuDeleteAllMessages_Click(object sender, System.EventArgs e)
