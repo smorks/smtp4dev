@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Rnwood.Smtp4dev.MessageInspector;
+using System;
+using System.CodeDom.Compiler;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -24,7 +29,6 @@ namespace Rnwood.Smtp4dev
         {
             CreateTrayIcon();
             InitServer();
-            InitMainForm();
             EnableContextMenuItems();
             SetTrayIconText();
 
@@ -129,22 +133,22 @@ namespace Rnwood.Smtp4dev
             {
                 if (Properties.Settings.Default.AutoViewNewMessages)
                 {
-                    _form.ViewMessage(message);
+                    ViewMessage(message);
                 }
 
                 if (Properties.Settings.Default.AutoInspectNewMessages)
                 {
-                    _form.InspectMessage(message);
+                    InspectMessage(message);
                 }
             }
-            else if (!_form.Visible && Properties.Settings.Default.BalloonNotifications)
+            else if (_form == null && Properties.Settings.Default.BalloonNotifications)
             {
                 string body = $"From: {message.From}\nTo: {message.To}\nSubject: {message.Subject}\n<Click here to view more details>";
 
                 _trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
             }
 
-            if (_form.Visible && Properties.Settings.Default.BringToFrontOnNewMessage)
+            if (_form != null && Properties.Settings.Default.BringToFrontOnNewMessage)
             {
                 _form.BringToFront();
                 _form.Activate();
@@ -169,7 +173,7 @@ namespace Rnwood.Smtp4dev
         {
             if (_contextMenu.InvokeRequired)
             {
-                _contextMenu.Invoke(new System.Action(() => _menuListenForConnections.Checked = listening));
+                _contextMenu.Invoke(new Action(() => _menuListenForConnections.Checked = listening));
             }
             else
             {
@@ -177,53 +181,40 @@ namespace Rnwood.Smtp4dev
             }
         }
 
-        private void InitMainForm()
+        private void _trayIcon_DoubleClick(object sender, EventArgs e)
         {
-            _form = new MainForm(_server, _messages, _sessions);
+            ShowMainForm();
         }
 
-
-        private void _trayIcon_DoubleClick(object sender, System.EventArgs e)
-        {
-            _form.Show();
-        }
-
-        private void _trayIcon_BalloonTipClicked(object sender, System.EventArgs e)
+        private void _trayIcon_BalloonTipClicked(object sender, EventArgs e)
         {
             if (_messages.Count > 0)
             {
                 if (Properties.Settings.Default.InspectOnBalloonClick)
                 {
-                    _form.InspectMessage(_messages.Last());
+                    InspectMessage(_messages.Last());
                 }
                 else
                 {
-                    _form.ViewMessage(_messages.Last());
+                    ViewMessage(_messages.Last());
                 }
             }
             else
             {
-                _form.Visible = true;
+                ShowMainForm();
             }
         }
 
         private void MenuViewMessages_Click(object sender, System.EventArgs e)
         {
-            _form.Show();
+            ShowMainForm();
         }
 
         private void MenuViewLastMessage_Click(object sender, System.EventArgs e)
         {
             if (_messages.Count > 0)
             {
-                if (Properties.Settings.Default.UseMessageInspectorOnDoubleClick)
-                {
-                    _form.InspectMessage(_messages.Last());
-                }
-                else
-                {
-                    _form.ViewMessage(_messages.Last());
-                }
+                ViewOrInspectMessage(_messages.Last());
             }
         }
 
@@ -255,12 +246,108 @@ namespace Rnwood.Smtp4dev
 
         private void MenuExit_Click(object sender, System.EventArgs e)
         {
+            if (_form != null)
+            {
+                _form.Close();
+            }
+
             if (_server.IsRunning)
             {
                 _server.Stop();
             }
+
             _trayIcon.Visible = false;
             Application.Exit();
+        }
+
+        private void ShowMainForm()
+        {
+            if (_form == null)
+            {
+                _form = new MainForm(_server, _messages, _sessions);
+                _form.InspectMessageClicked += _form_InspectMessageClicked;
+                _form.ViewMessageClicked += _form_ViewMessageClicked;
+                _form.FormClosed += _form_FormClosed;
+                _form.Show();
+            }
+            else
+            {
+                _form.Activate();
+            }
+        }
+
+        private void _form_ViewMessageClicked(object sender, MessageViewModel msg)
+        {
+            ViewMessage(msg);
+        }
+
+        private void _form_InspectMessageClicked(object sender, MessageViewModel msg)
+        {
+            InspectMessage(msg);
+        }
+
+        private void _form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _form = null;
+        }
+
+        private void ViewOrInspectMessage(MessageViewModel msg)
+        {
+            if (Properties.Settings.Default.UseMessageInspectorOnDoubleClick)
+            {
+                InspectMessage(msg);
+            }
+            else
+            {
+                ViewMessage(msg);
+            }
+        }
+
+        private void InspectMessage(MessageViewModel message)
+        {
+            message.MarkAsViewed();
+
+            InspectorWindow form = new InspectorWindow(message.Parts);
+            form.Show();
+        }
+
+        internal void ViewMessage(MessageViewModel message)
+        {
+            var tempFile = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + ".eml");
+            var msgFile = new FileInfo(tempFile);
+            message.SaveToFile(msgFile);
+
+            if (Registry.ClassesRoot.OpenSubKey(".eml", false) == null || string.IsNullOrEmpty((string)Registry.ClassesRoot.OpenSubKey(".eml", false).GetValue(null)))
+            {
+                switch (MessageBox.Show("You don't appear to have a viewer application associated with .eml files!\nWould you like to download Windows Live Mail (free from live.com website)?",
+                                        "View Message", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        Process.Start("http://download.live.com/wlmail");
+                        return;
+                    case DialogResult.Cancel:
+                        return;
+                }
+            }
+
+            var p = new Process()
+            {
+                StartInfo = { FileName = msgFile.FullName },
+                EnableRaisingEvents = true
+            };
+
+            p.Exited += (sender, e) =>
+            {
+                try
+                {
+                    File.Delete(msgFile.FullName);
+                }
+                catch
+                {
+                }
+            };
+
+            p.Start();
         }
     }
 }

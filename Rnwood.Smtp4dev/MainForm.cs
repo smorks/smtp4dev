@@ -1,13 +1,9 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using Rnwood.Smtp4dev.MessageInspector;
 using Rnwood.Smtp4dev.Properties;
 
 namespace Rnwood.Smtp4dev
@@ -30,7 +26,14 @@ namespace Rnwood.Smtp4dev
 
             Sessions = sessions;
             sessionBindingSource.DataSource = Sessions;
+
+            InitServerControls();
         }
+
+        internal delegate void MessageEventHandler(object sender, MessageViewModel msg);
+
+        internal event MessageEventHandler ViewMessageClicked;
+        internal event MessageEventHandler InspectMessageClicked;
 
         public BindingList<MessageViewModel> Messages { get; }
 
@@ -111,39 +114,8 @@ namespace Rnwood.Smtp4dev
         {
             foreach (MessageViewModel message in SelectedMessages)
             {
-                ViewMessage(message);
+                ViewMessageClicked?.Invoke(this, message);
             }
-        }
-
-        internal void ViewMessage(MessageViewModel message)
-        {
-            if (Settings.Default.UseMessageInspectorOnDoubleClick)
-            {
-                InspectMessage(message);
-                return;
-            }
-
-
-            TempFileCollection tempFiles = new TempFileCollection();
-            FileInfo msgFile = new FileInfo(tempFiles.AddExtension("eml"));
-            message.SaveToFile(msgFile);
-
-            if (Registry.ClassesRoot.OpenSubKey(".eml", false) == null || string.IsNullOrEmpty((string)Registry.ClassesRoot.OpenSubKey(".eml", false).GetValue(null)))
-            {
-                switch (MessageBox.Show(this,
-                                        "You don't appear to have a viewer application associated with .eml files!\nWould you like to download Windows Live Mail (free from live.com website)?",
-                                        "View Message", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-                {
-                    case DialogResult.Yes:
-                        Process.Start("http://download.live.com/wlmail");
-                        return;
-                    case DialogResult.Cancel:
-                        return;
-                }
-            }
-
-            Process.Start(msgFile.FullName);
-            messageGrid.Refresh();
         }
 
         private void deleteAllButton_Click(object sender, EventArgs e)
@@ -262,18 +234,8 @@ namespace Rnwood.Smtp4dev
         {
             foreach (MessageViewModel message in SelectedMessages)
             {
-                InspectMessage(message);
+                InspectMessageClicked(this, message);
             }
-        }
-
-        internal void InspectMessage(MessageViewModel message)
-        {
-            message.MarkAsViewed();
-
-            InspectorWindow form = new InspectorWindow(message.Parts);
-            form.Show();
-
-            messageGrid.Refresh();
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -312,6 +274,18 @@ namespace Rnwood.Smtp4dev
             SetServerStartedControls();
         }
 
+        private void InitServerControls()
+        {
+            if (Server.IsRunning)
+            {
+                SetServerStartedControls();
+            }
+            else
+            {
+                SetServerStoppedControls();
+            }
+        }
+
         private void SetServerStoppedControls()
         {
             if (InvokeRequired)
@@ -337,15 +311,6 @@ namespace Rnwood.Smtp4dev
                 statusLabel.Text = $"Listening on port {Settings.Default.PortNumber}";
                 runningPicture.Visible = stopListeningButton.Visible = true;
                 notRunningPicture.Visible = startListeningButton.Visible = false;
-            }
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                Hide();
             }
         }
     }
