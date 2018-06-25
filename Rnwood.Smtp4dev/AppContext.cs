@@ -48,15 +48,22 @@ namespace Rnwood.Smtp4dev
 
         private void EnableContextMenuItems()
         {
-            if (_messages.Count == 0)
+            if (_contextMenu.InvokeRequired)
             {
-                _menuViewLastMessage.Enabled = false;
-                _menuDeleteAllMessages.Enabled = false;
+                _contextMenu.Invoke(new Action(EnableContextMenuItems));
             }
             else
             {
-                _menuViewLastMessage.Enabled = true;
-                _menuDeleteAllMessages.Enabled = true;
+                if (_messages.Count == 0)
+                {
+                    _menuViewLastMessage.Enabled = false;
+                    _menuDeleteAllMessages.Enabled = false;
+                }
+                else
+                {
+                    _menuViewLastMessage.Enabled = true;
+                    _menuDeleteAllMessages.Enabled = true;
+                }
             }
         }
 

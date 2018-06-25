@@ -95,7 +95,7 @@ namespace Rnwood.Smtp4dev
 
         private void _messages_ListChanged(object sender, ListChangedEventArgs e)
         {
-            deleteAllButton.Enabled = Messages.Count > 0;
+            EnableDeleteAllButton();
 
             if (e.ListChangedType == ListChangedType.ItemAdded && Settings.Default.ScrollMessages &&
                 messageGrid.RowCount > 0)
@@ -280,6 +280,8 @@ namespace Rnwood.Smtp4dev
 
         private void InitServerControls()
         {
+            deleteAllButton.Enabled = Messages.Count > 0;
+
             if (Server.IsRunning)
             {
                 SetServerStartedControls();
@@ -315,6 +317,18 @@ namespace Rnwood.Smtp4dev
                 statusLabel.Text = $"Listening on port {Settings.Default.PortNumber}";
                 runningPicture.Visible = stopListeningButton.Visible = true;
                 notRunningPicture.Visible = startListeningButton.Visible = false;
+            }
+        }
+
+        private void EnableDeleteAllButton()
+        {
+            if (deleteAllButton.InvokeRequired)
+            {
+                deleteAllButton.Invoke(new Action(EnableDeleteAllButton));
+            }
+            else
+            {
+                deleteAllButton.Enabled = Messages.Count > 0;
             }
         }
     }
