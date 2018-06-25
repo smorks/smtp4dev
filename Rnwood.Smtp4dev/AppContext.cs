@@ -123,42 +123,54 @@ namespace Rnwood.Smtp4dev
 
         private void _server_Behaviour_MessageReceived(object sender, SmtpServer.MessageEventArgs e)
         {
-            var message = new MessageViewModel(e.Message);
+            ProcessNewMessage(e.Message);
+        }
 
-            _messages.Add(message);
-
-            if (Properties.Settings.Default.MaxMessages > 0)
+        private void ProcessNewMessage(SmtpServer.Message msg)
+        {
+            if (_form != null && _form.InvokeRequired)
             {
-                while (_messages.Count > Properties.Settings.Default.MaxMessages)
-                {
-                    _messages.RemoveAt(0);
-                }
+                _form.Invoke(new Action<SmtpServer.Message>(ProcessNewMessage), msg);
             }
-
-            if (Properties.Settings.Default.AutoViewNewMessages ||
-                Properties.Settings.Default.AutoInspectNewMessages)
+            else
             {
-                if (Properties.Settings.Default.AutoViewNewMessages)
+                var message = new MessageViewModel(msg);
+
+                _messages.Add(message);
+
+                if (Properties.Settings.Default.MaxMessages > 0)
                 {
-                    ViewMessage(message);
+                    while (_messages.Count > Properties.Settings.Default.MaxMessages)
+                    {
+                        _messages.RemoveAt(0);
+                    }
                 }
 
-                if (Properties.Settings.Default.AutoInspectNewMessages)
+                if (Properties.Settings.Default.AutoViewNewMessages ||
+                    Properties.Settings.Default.AutoInspectNewMessages)
                 {
-                    InspectMessage(message);
+                    if (Properties.Settings.Default.AutoViewNewMessages)
+                    {
+                        ViewMessage(message);
+                    }
+
+                    if (Properties.Settings.Default.AutoInspectNewMessages)
+                    {
+                        InspectMessage(message);
+                    }
                 }
-            }
-            else if (_form == null && Properties.Settings.Default.BalloonNotifications)
-            {
-                string body = $"From: {message.From}\nTo: {message.To}\nSubject: {message.Subject}\n<Click here to view more details>";
+                else if (_form == null && Properties.Settings.Default.BalloonNotifications)
+                {
+                    string body = $"From: {message.From}\nTo: {message.To}\nSubject: {message.Subject}\n<Click here to view more details>";
 
-                _trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
-            }
+                    _trayIcon.ShowBalloonTip(3000, "Message Received", body, ToolTipIcon.Info);
+                }
 
-            if (_form != null && Properties.Settings.Default.BringToFrontOnNewMessage)
-            {
-                _form.BringToFront();
-                _form.Activate();
+                if (_form != null && Properties.Settings.Default.BringToFrontOnNewMessage)
+                {
+                    _form.BringToFront();
+                    _form.Activate();
+                }
             }
         }
 
