@@ -34,6 +34,7 @@ namespace Rnwood.Smtp4dev
 
         internal event MessageEventHandler ViewMessageClicked;
         internal event MessageEventHandler InspectMessageClicked;
+        internal event MessageEventHandler ViewOrInspectMessagedClicked;
 
         public BindingList<MessageViewModel> Messages { get; }
 
@@ -131,7 +132,10 @@ namespace Rnwood.Smtp4dev
 
         private void messageGrid_DoubleClick(object sender, EventArgs e)
         {
-            ViewSelectedMessages();
+            foreach (MessageViewModel message in SelectedMessages)
+            {
+                ViewOrInspectMessagedClicked?.Invoke(this, message);
+            }
         }
 
         private void MainForm_VisibleChanged(object sender, EventArgs e)

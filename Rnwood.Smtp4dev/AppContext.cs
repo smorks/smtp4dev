@@ -267,6 +267,7 @@ namespace Rnwood.Smtp4dev
                 _form = new MainForm(_server, _messages, _sessions);
                 _form.InspectMessageClicked += _form_InspectMessageClicked;
                 _form.ViewMessageClicked += _form_ViewMessageClicked;
+                _form.ViewOrInspectMessagedClicked += _form_ViewOrInspectMessagedClicked;
                 _form.FormClosed += _form_FormClosed;
                 _form.Show();
             }
@@ -274,6 +275,11 @@ namespace Rnwood.Smtp4dev
             {
                 _form.Activate();
             }
+        }
+
+        private void _form_ViewOrInspectMessagedClicked(object sender, MessageViewModel msg)
+        {
+            ViewOrInspectMessage(msg);
         }
 
         private void _form_ViewMessageClicked(object sender, MessageViewModel msg)
