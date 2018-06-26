@@ -100,7 +100,7 @@ namespace Rnwood.Smtp4dev
 
                 if (System.IO.File.Exists(localCert))
                 {
-                    return new X509Certificate(localCert);
+                    return new X509Certificate2(localCert);
                 }
                 
                 var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
