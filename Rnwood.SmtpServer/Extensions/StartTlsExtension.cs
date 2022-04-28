@@ -56,7 +56,7 @@ namespace Rnwood.SmtpServer.Extensions
                                                           sslStream.AuthenticateAsServer(
                                                               connection.Server.Behaviour.GetSSLCertificate(
                                                                   connection), false,
-                                                              SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls,
+                                                              SslProtocols.None,
                                                               false);
                                                           return sslStream;
                                                       });
